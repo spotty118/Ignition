@@ -14,7 +14,7 @@ export interface PlatformConfig {
 type PlatformConfigJson = {
 	messageEncoding: "none" | "json"
 	showNavbar: boolean
-	postMessageHandler: "vscode" | "standalone"
+	postMessageHandler: "vscode" | "standalone" | "zed"
 	togglePlanActKeys: string
 	supportsTerminalMentions: boolean
 }
@@ -28,6 +28,8 @@ declare global {
 		// !! Do not change the name of the handler without updating it on
 		// the JetBrains side as well. !!
 		standalonePostMessage?: (message: string) => void
+		// Zed editor webview API
+		zedPostMessage?: (message: string) => void
 	}
 	function acquireVsCodeApi(): any
 }
@@ -52,6 +54,15 @@ const postMessageStrategies: Record<string, PostMessageFunction> = {
 		const json = JSON.stringify(message)
 		console.log("Standalone postMessage: " + json.slice(0, 200))
 		window.standalonePostMessage(json)
+	},
+	zed: (message: any) => {
+		if (!window.zedPostMessage) {
+			console.error("Zed postMessage not found.")
+			return
+		}
+		const json = JSON.stringify(message)
+		console.log("Zed postMessage: " + json.slice(0, 200))
+		window.zedPostMessage(json)
 	},
 }
 

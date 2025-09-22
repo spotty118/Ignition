@@ -12,5 +12,12 @@
 		"postMessageHandler": "standalone",
 		"togglePlanActKeys": "Meta+Shift+p",
 		"supportsTerminalMentions": false
+	},
+	"zed": {
+		"messageEncoding": "json",
+		"showNavbar": false,
+		"postMessageHandler": "zed",
+		"togglePlanActKeys": "Meta+Shift+a",
+		"supportsTerminalMentions": false
 	}
 }
