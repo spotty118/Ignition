@@ -1,0 +1,35 @@
+{
+	"id": "cline",
+	"name": "Cline",
+	"description": "Autonomous coding agent right in your IDE, capable of creating/editing files, running commands, using the browser, and more with your permission every step of the way.",
+	"version": "3.29.0",
+	"schema_version": 1,
+	"authors": ["Cline Bot Inc."],
+	"repository": "https://github.com/cline/cline",
+	"lib": {
+		"kind": "TypeScript"
+	},
+	"themes": {},
+	"languages": {},
+	"grammars": {},
+	"commands": [
+		{
+			"command": "cline:new-task",
+			"title": "Cline: New Task"
+		},
+		{
+			"command": "cline:open-settings", 
+			"title": "Cline: Open Settings"
+		},
+		{
+			"command": "cline:open-history",
+			"title": "Cline: Open History"
+		}
+	],
+	"keybindings": [
+		{
+			"command": "cline:new-task",
+			"key": "cmd+shift+c"
+		}
+	]
+}

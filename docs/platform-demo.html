@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cline Platform Configuration Demo</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 40px;
+            background-color: #1e1e1e;
+            color: #cccccc;
+        }
+        .platform-demo {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .config-section {
+            background-color: #2d2d30;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .platform-selector {
+            margin-bottom: 20px;
+        }
+        select {
+            background-color: #3c3c3c;
+            color: #cccccc;
+            border: 1px solid #464647;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin-left: 10px;
+        }
+        .config-display {
+            background-color: #1e1e1e;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            border: 1px solid #464647;
+        }
+        .message-test {
+            background-color: #0e639c;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .message-test:hover {
+            background-color: #1177bb;
+        }
+        .log-output {
+            background-color: #252526;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            height: 150px;
+            overflow-y: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 12px;
+            border: 1px solid #464647;
+        }
+    </style>
+</head>
+<body>
+    <div class="platform-demo">
+        <h1>🔧 Cline Platform Configuration Demo</h1>
+        <p>This demo shows how Cline's platform configuration system works across different editors.</p>
+        
+        <div class="config-section">
+            <h2>Platform Selection</h2>
+            <div class="platform-selector">
+                <label for="platform-select">Current Platform:</label>
+                <select id="platform-select">
+                    <option value="vscode">VS Code</option>
+                    <option value="standalone">Standalone</option>
+                    <option value="zed" selected>Zed Editor</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="config-section">
+            <h2>Platform Configuration</h2>
+            <pre class="config-display" id="config-display"></pre>
+        </div>
+
+        <div class="config-section">
+            <h2>Message Handling Test</h2>
+            <button class="message-test" onclick="testPlatformMessage()">Send Test Message</button>
+            <div class="log-output" id="log-output"></div>
+        </div>
+    </div>
+
+    <script>
+        // Platform configurations (copied from platform-configs.json)
+        const platformConfigs = {
+            "vscode": {
+                "messageEncoding": "none",
+                "showNavbar": false,
+                "postMessageHandler": "vscode",
+                "togglePlanActKeys": "Meta+Shift+a",
+                "supportsTerminalMentions": true
+            },
+            "standalone": {
+                "messageEncoding": "json",
+                "showNavbar": true,
+                "postMessageHandler": "standalone",
+                "togglePlanActKeys": "Meta+Shift+p",
+                "supportsTerminalMentions": false
+            },
+            "zed": {
+                "messageEncoding": "json",
+                "showNavbar": false,
+                "postMessageHandler": "zed",
+                "togglePlanActKeys": "Meta+Shift+a",
+                "supportsTerminalMentions": false
+            }
+        };
+
+        // Mock post message handlers
+        const postMessageStrategies = {
+            vscode: (message) => {
+                logMessage('📘 VS Code postMessage:', message);
+                // In real implementation: vsCodeApi.postMessage(message)
+            },
+            standalone: (message) => {
+                logMessage('🏠 Standalone postMessage:', JSON.stringify(message));
+                // In real implementation: window.standalonePostMessage(JSON.stringify(message))
+            },
+            zed: (message) => {
+                logMessage('⚡ Zed postMessage:', JSON.stringify(message));
+                // In real implementation: window.zedPostMessage(JSON.stringify(message))
+            }
+        };
+
+        let currentPlatform = 'zed';
+
+        function updateConfigDisplay() {
+            const config = platformConfigs[currentPlatform];
+            document.getElementById('config-display').textContent = JSON.stringify(config, null, 2);
+        }
+
+        function logMessage(prefix, message) {
+            const logOutput = document.getElementById('log-output');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.textContent = `[${timestamp}] ${prefix} ${message}`;
+            logOutput.appendChild(logEntry);
+            logOutput.scrollTop = logOutput.scrollHeight;
+        }
+
+        function testPlatformMessage() {
+            const config = platformConfigs[currentPlatform];
+            const handler = postMessageStrategies[config.postMessageHandler];
+            
+            const testMessage = {
+                type: 'test',
+                platform: currentPlatform,
+                timestamp: Date.now(),
+                encoding: config.messageEncoding,
+                data: 'Hello from Cline platform demo!'
+            };
+
+            logMessage('🚀 Sending message via', `${config.postMessageHandler} handler`);
+            handler(testMessage);
+        }
+
+        // Event listeners
+        document.getElementById('platform-select').addEventListener('change', (e) => {
+            currentPlatform = e.target.value;
+            updateConfigDisplay();
+            logMessage('🔄 Platform changed to:', currentPlatform);
+        });
+
+        // Initialize
+        updateConfigDisplay();
+        logMessage('✅ Platform demo initialized for:', currentPlatform);
+    </script>
+</body>
+</html>
